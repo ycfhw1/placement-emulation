@@ -1,5 +1,5 @@
 - node: pop6
-  vnf: vnf_user
+  vnf: vnf_user_6
   flows:
     - id: f1
       data_rate: 1

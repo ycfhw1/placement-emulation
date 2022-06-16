@@ -1,5 +1,5 @@
 - node: pop9
-  vnf: vnf_user
+  vnf: vnf_user_9
   flows:
     - id: f1
       data_rate: 1

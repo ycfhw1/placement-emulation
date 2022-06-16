@@ -61,10 +61,10 @@ def parse_log(log_file, input_prefix=''):
                 result["input"]["num_nodes"] = network.number_of_nodes()
                 result["input"]["num_edges"] = network.number_of_edges()
                 with open(input_prefix + service) as f:
-                    service = yaml.load(f)
+                    service = yaml.load(f,Loader=yaml.FullLoader)
                     result["input"]["num_vnfs"] = len(service["vnfs"])
                 with open(input_prefix + sources) as f:
-                    sources = yaml.load(f)
+                    sources = yaml.load(f,Loader=yaml.FullLoader)
                     result["input"]["num_sources"] = len(sources)
 
     return result

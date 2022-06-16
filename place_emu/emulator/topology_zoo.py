@@ -30,6 +30,7 @@ import argparse
 import networkx as nx
 import signal
 import time
+import os
 from geopy.distance import vincenty
 import numpy as np
 from mininet.net import Containernet
@@ -107,6 +108,7 @@ class TopologyZooTopology(object):
             self.pops.append(p)
             LOG.info("Created pop: {} representing {}"
                      .format(p, n[1].get("label", n[0])))
+            os.system("vim-emu datacenter list")
 
     def create_links(self):
         for e in self.G.edges(data=True):
@@ -203,8 +205,8 @@ def parse_args():
         "-g",
         "--graph",
         help="Input GraphML file",
-        required=True,
-        default=None,
+        required=False,
+        default="/home/xiaofu/placement-emulation/inputs/networks/Aarnet.graphml",
         dest="graph_file")
     return parser.parse_args()
 

@@ -37,7 +37,7 @@ mkdir -p results/$ALG/emulation
 
 # start vim-emu with the specified network
 printf "\n\nStarting the emulator\n"
-sudo python place_emu/emulator/topology_zoo.py -g $NETWORK &
+sudo python3 place_emu/emulator/topology_zoo.py -g $NETWORK &
 
 # wait for the emulator to start (depends on network size)
 echo "Start"
@@ -66,7 +66,7 @@ python3 place_emu/util/log_parser.py -f $LOG
 rm $LOG
 
 # stop: find the pids and stop the process (will automatically clean up)
-pgrep -f "python place_emu" | sudo xargs kill
+pgrep -f "python3 place_emu" | sudo xargs kill
 sleep $(($NETWORKSIZE/2))
 echo "Placement-emulation completed!"
 

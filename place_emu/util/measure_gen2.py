@@ -1,6 +1,4 @@
 # script for creating suitable measurement shell-scripts
-import time
-
 import yaml
 import json
 import argparse
@@ -30,30 +28,32 @@ def generate_measure_script(service_file, num_pings=10):
     # read service yaml file
     with open(service_file, 'r') as f_service:
         service = yaml.load(f_service,Loader=yaml.FullLoader)
+
         # set input and output IPs
         ips = {}
-        for vnf in service['placement']['vnfs']:
+        for vnf in service['vnfs']:
             image = json.loads(vnf['image'])
             interfaces = get_interfaces(image['network'])
             ips[vnf['name']] = {}
             for port, ip in interfaces.items():
                 ips[vnf['name']][port] = ip
+
         # write measurements between VNFs (assuming they all have IPs, not layer 2)
-        for vl in service['placement']['vlinks']:
+        for vl in service['vlinks']:
             lines.append(echo_vnf)
-            lines.append('echo "{} -> {}"'.format(vl['src_vnf'], vl['dest_vnf']))
-            dest_ip = ips[vl['dest_vnf']]['input']
-            lines.append('sudo docker exec -it mn.{} ping -c{} -q {}'.format(vl['src_vnf'], num_pings, dest_ip))
+            lines.append('echo "{} -> {}"'.format(vl['src'], vl['dest']))
+            dest_ip = ips[vl['dest']]['input']
+            lines.append('sudo docker exec -it mn.{} ping -c{} -q {}'.format(vl['src'], num_pings, dest_ip))
 
             # save 1st forwarder in chain for later
-            if 'vnf_user' in vl['src_vnf']:
-                first_fwd = vl['dest_vnf']
+            if vl['src'] == 'vnf_user':
+                first_fwd = vl['dest']
         lines.append('')
 
         # write measurements of whole chain (assuming it starts with vnf_user)
         lines.append(echo_chain)
         dest_ip = ips[first_fwd]['input']
-        lines.append('sudo docker exec -it mn.vnf_userpop0 httping --url {} -c {}'.format(dest_ip, num_pings))
+        lines.append('sudo docker exec -it mn.vnf_user httping --url {} -c {}'.format(dest_ip, num_pings))
 
         # print
         for l in lines:

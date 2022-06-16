@@ -3,8 +3,7 @@ import yaml
 import requests
 import ast
 import bjointsp.main as bjointsp
-from place_emu.placement import random_placement, greedy_placement
-
+from place_emu.placement import random_placement, greedy_placement, random_placement2
 
 compute_url = 'http://127.0.0.1:5001/restapi/compute/'
 network_url = 'http://127.0.0.1:5001/restapi/network'
@@ -13,8 +12,7 @@ config_prefix = " -H 'Content-Type: application/json' -d "
 
 def emulate_placement(placement):
     with open(placement, 'r') as place_file:
-        result = yaml.load(place_file)
-
+        result = yaml.load(place_file,Loader=yaml.FullLoader)
         # start placed VNF instances on the emulator
         for vnf in result['placement']['vnfs']:
             data = ast.literal_eval(vnf['image'])      # convert string config to dict
@@ -59,6 +57,9 @@ def main():
     elif args.alg == 'random':
         print('\nStarting random placement\n')
         placement = random_placement.place(args.network, args.service, args.sources)
+    elif args.alg == 'random2':
+        print('\nStarting random2 placement\n')
+        placement = random_placement2.place(args.network, args.service, args.sources)
     elif args.alg == 'greedy':
         print('\nStarting greedy placement\n')
         placement = greedy_placement.place(args.network, args.service, args.sources)

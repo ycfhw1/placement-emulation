@@ -12,10 +12,11 @@ function filename {
 
 
 # constants
-ALG=greedy
+ALG=random2
 NETWORK=inputs/networks/Abilene.graphml
 SERVICE=inputs/services/fw1chain.yaml
 SOURCES=inputs/sources/source0.yaml
+PLACEMENT=results/random2/Abilene*.yaml
 NUM_PINGS=3
 
 # individual log file
@@ -42,10 +43,12 @@ python3 place_emu/placement_emulator.py -a $ALG --network $NETWORK --service $SE
 
 # start measurement: 1. generate individual measurement script, 2. run & log it
 printf "\n\nStarting the measurement (logging to $LOG)\n"
-MEASUREMENT="$(python3 place_emu/util/measure_gen.py -t $SERVICE -c $NUM_PINGS)"
+RESULTS=""
+MEASUREMENT="$(python3 place_emu/util/measure_gen.py -t $PLACEMENT -c $NUM_PINGS)"
 eval "${MEASUREMENT}" |& tee -a $LOG
 
 # append info to log: timestamp, network, service, sources
+printf $LOG
 printf "\nInfo\n" >> $LOG
 echo "timestamp: $TIMESTAMP" >> $LOG
 echo "algorithm: $ALG" >> $LOG
@@ -56,9 +59,9 @@ echo "sources: $SOURCES" >> $LOG
 ## convert log to structured yaml file
 python3 place_emu/util/log_parser.py -f $LOG
 rm $LOG
-
+#自动清理放置过程
 # stop: find the pids and stop the process (will automatically clean up)
-pgrep -f "python place_emu" | sudo xargs kill
+pgrep -f "python3 place_emu" | sudo xargs kill
 sleep $(($NETWORKSIZE/2))
 printf "\nPlacement-emulation completed!\n"
 
