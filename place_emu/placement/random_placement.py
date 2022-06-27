@@ -104,7 +104,7 @@ def place(network_file, service_file, sources_file, seed=1234):
 def parse_args():
     parser = argparse.ArgumentParser(description="Simple random placement")
     parser.add_argument("--network", help="Network input file (.graphml)", required=True, default=None, dest="network")
-    parser.add_argument("--service", help="Template input file (.yaml)", required=True, default=None, dest="service")
+    parser.add_argument("--service", help="Template input file (.yaml)", required=True, default=None, dest="service",nargs='+')
     parser.add_argument("--sources", help="Sources input file (.yaml)", required=True, default=None, dest="sources")
     return parser.parse_args()
 

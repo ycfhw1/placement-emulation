@@ -5,7 +5,9 @@ MAINTAINER manuel.peuster@uni-paderborn.de
 ENV FW_IN_PORT 80
 ENV FW_OUT_ADDR 99.0.0.2
 ENV FW_OUT_PORT 80
-
+RUN sed -i s/archive.ubuntu.com/mirrors.aliyun.com/g /etc/apt/sources.list \
+&& sed -i s/security.ubuntu.com/mirrors.aliyun.com/g /etc/apt/sources.list \
+&& apt-get update && apt-get upgrade
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -y -q \
 	net-tools \
 	iproute \
@@ -15,6 +17,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -
 	ebtables \
 	bridge-utils \
 	ethtool \
+	traceroute \
 	bmon \
 	vim \
   curl \

@@ -34,7 +34,7 @@ def place(network_file, service_file, sources_file, seed=1234):
     # for better comparison with other placement algorithms
     network = reader.read_network(network_file, node_attr={1: 'cpu'})
     with open(service_file) as f:
-        service = yaml.load(f,Loader=yaml.FullLoader)
+        service = yaml.load(f, Loader=yaml.FullLoader)
     with open(sources_file) as f:
         sources = yaml.load(f,Loader=yaml.FullLoader)
 
@@ -53,10 +53,10 @@ def place(network_file, service_file, sources_file, seed=1234):
 
     # placement
     for src in sources:
+        # placement
         # place the first VNF at the source
         # find matching VNF in the service (there should be exactly one)
         matched_vnf = [vnf for vnf in service['vnfs'] if vnf['name'] == src['vnf']][0]
-        src['vnf']=src['vnf']+src['node']
         src_vnf = {'name': src['vnf'], 'node': src['node'], 'image': matched_vnf['image']}
         placement['placement']['vnfs'].append(src_vnf)
         print('Placed {} at {}'.format(src_vnf['name'], src_vnf['node']))
@@ -66,19 +66,18 @@ def place(network_file, service_file, sources_file, seed=1234):
         # follow vLinks in service to reach following VNFs and place randomly
         end_of_chain = False
         while not end_of_chain:
-            matched_vlink = [vl for vl in service['vlinks'] if vl['src'] in src_vnf['name']]
+            matched_vlink = [vl for vl in service['vlinks'] if vl['src'] == src_vnf['name']]
             if matched_vlink:
                 # follow only first matching vlink and place the dest-vnf
                 # assume a linear chain, ie, only one matching vlink
                 matched_vlink = matched_vlink[0]
-                matched_vnf = [vnf for vnf in service['vnfs'] if vnf['name'] in matched_vlink['dest']][0]
+                matched_vnf = [vnf for vnf in service['vnfs'] if vnf['name'] == matched_vlink['dest']][0]
 
-                # get random node with remaining resources
+                # get random node with remaining 这个方法需要关注一下，我认为没有减去的方法
                 available_nodes = [v for v, cpu in nx.get_node_attributes(network, 'cpu').items() if cpu > 0]
                 # sort list to get reproducible results! Else, the order may be arbitrary in NetworkX 2.0
                 available_nodes.sort()
                 rand_node = random.choice(available_nodes)
-                matched_vnf['name']=matched_vnf['name']+rand_node
                 dest_vnf = {'name': matched_vnf['name'], 'node': rand_node, 'image': matched_vnf['image']}
                 placement['placement']['vnfs'].append(dest_vnf)
                 print('Placed {} at {}'.format(dest_vnf['name'], dest_vnf['node']))
@@ -98,15 +97,15 @@ def place(network_file, service_file, sources_file, seed=1234):
     # add chain and inter-VNF delays along links of the shortest paths
     placement = add_delays(placement, network)
     # write placement to file
-    result = writer.write_placement(network_file, service_file, sources_file, placement, 'random2')
+    # result = writer.write_placement(network_file, service_file, sources_file, placement, 'random2')
 
-    return result
+    return placement
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Simple random placement")
     parser.add_argument("--network", help="Network input file (.graphml)", required=True, default=None, dest="network")
-    parser.add_argument("--service", help="Template input file (.yaml)", required=True, default=None, dest="service")
+    parser.add_argument("--service", help="Template input file (.yaml)", required=True, default=None, dest="service",nargs='+')
     parser.add_argument("--sources", help="Sources input file (.yaml)", required=True, default=None, dest="sources")
     return parser.parse_args()
 

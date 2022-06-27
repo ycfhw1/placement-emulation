@@ -4,11 +4,11 @@ import requests
 import ast
 import bjointsp.main as bjointsp
 from place_emu.placement import random_placement, greedy_placement, random_placement2
+from util.writer import write_placement2
 
 compute_url = 'http://127.0.0.1:5001/restapi/compute/'
 network_url = 'http://127.0.0.1:5001/restapi/network'
 config_prefix = " -H 'Content-Type: application/json' -d "
-
 
 def emulate_placement(placement):
     with open(placement, 'r') as place_file:
@@ -37,7 +37,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Triggers placement and then emulation')
     parser.add_argument('-a', '--algorithm', help='Placement algorithm ("bjointsp", "random", "greedy")', required=True, dest='alg')
     parser.add_argument('--network', help='Network input file (.graphml)', required=True, dest='network')
-    parser.add_argument('--service', help='Service input file (.yaml)', required=True, dest='service')
+    parser.add_argument('--service', help='Service input file (.yaml)', required=True, dest='service',nargs='+')
     parser.add_argument('--sources', help='Sources input file (.yaml)', required=True, dest='sources')
     parser.add_argument(
         '--placeOnly',
@@ -51,18 +51,30 @@ def parse_args():
 
 def main():
     args = parse_args()
+    placements=[]
     if args.alg == 'bjointsp':
         print('\nStarting placement with B-JointSP (heuristic)\n')
-        placement = bjointsp.place(args.network, args.service, args.sources, cpu=1, mem=10, dr=50)
+        for service in args.service:
+            placement = bjointsp.place(args.network, service, args.sources, cpu=1, mem=10, dr=50)
+            placements.append(placement)
+            write_placement2(args.network, args.service, args.sources, placements, 'bjointsp')
     elif args.alg == 'random':
         print('\nStarting random placement\n')
-        placement = random_placement.place(args.network, args.service, args.sources)
+        for service in args.service:
+            placement = random_placement.place(args.network, service, args.sources)
+            placements.append(placement)
+            write_placement2(args.network, args.service, args.sources, placements, 'random')
     elif args.alg == 'random2':
         print('\nStarting random2 placement\n')
-        placement = random_placement2.place(args.network, args.service, args.sources)
+        for service in args.service:
+            placement = random_placement2.place(args.network, service, args.sources)
+            placements.append(placement)
+
     elif args.alg == 'greedy':
         print('\nStarting greedy placement\n')
-        placement = greedy_placement.place(args.network, args.service, args.sources)
+        for service in args.service:
+            placement = greedy_placement.place(args.network, service, args.sources)
+            placements.append(placement)
     else:
         raise ValueError('Unknown placement algorithm: {}. Use "bjointsp", "random", or "greedy"'.format(args.alg))
 

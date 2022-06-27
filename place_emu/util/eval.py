@@ -8,6 +8,7 @@ import os
 # load simulation results and calculate RTT
 # network and algorithm name are used to filter the results
 def sim_delays(network, algorithm):
+    #返回一个某一种文件夹下面的某一类型文件路径列表
     sim_results = glob.glob('../eval/{}/{}/{}*.yaml'.format(network, algorithm, network))
     sim_delays = []
     for result_file in sim_results:

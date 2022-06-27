@@ -12,7 +12,7 @@ function filename {
 
 
 # constants
-ALG=random2
+ALG=random
 NETWORK=inputs/networks/Abilene.graphml
 SERVICE=inputs/services/fw1chain.yaml
 SOURCES=inputs/sources/source0.yaml
@@ -39,12 +39,12 @@ sleep $NETWORKSIZE
 
 # start the placement emulation
 printf "\n\nStarting the placement emulation\n"
-python3 place_emu/placement_emulator.py -a $ALG --network $NETWORK --service $SERVICE --sources $SOURCES
+python3 place_emu/placement_emulator2.py -a $ALG --network $NETWORK --service $SERVICE --sources $SOURCES
 
 # start measurement: 1. generate individual measurement script, 2. run & log it
 printf "\n\nStarting the measurement (logging to $LOG)\n"
 RESULTS=""
-MEASUREMENT="$(python3 place_emu/util/measure_gen.py -t $PLACEMENT -c $NUM_PINGS)"
+MEASUREMENT="$(python3 place_emu/util/measure_gen2.py -t $SERVICE -c $NUM_PINGS)"
 eval "${MEASUREMENT}" |& tee -a $LOG
 
 # append info to log: timestamp, network, service, sources

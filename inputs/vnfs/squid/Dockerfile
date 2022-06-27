@@ -1,6 +1,8 @@
 FROM ubuntu:xenial
 MAINTAINER manuel.peuster@uni-paderborn.de
-
+RUN sed -i s/archive.ubuntu.com/mirrors.aliyun.com/g /etc/apt/sources.list \
+&& sed -i s/security.ubuntu.com/mirrors.aliyun.com/g /etc/apt/sources.list \
+&& apt-get update && apt-get upgrade
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -y -q \
 	net-tools \
 	iproute \

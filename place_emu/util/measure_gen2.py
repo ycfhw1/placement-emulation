@@ -53,8 +53,8 @@ def generate_measure_script(service_file, num_pings=10):
         # write measurements of whole chain (assuming it starts with vnf_user)
         lines.append(echo_chain)
         dest_ip = ips[first_fwd]['input']
-        lines.append('sudo docker exec -it mn.vnf_user httping --url {} -c {}'.format(dest_ip, num_pings))
-
+        #lines.append('sudo docker exec -it mn.vnf_user httping --url {} -c {}'.format(dest_ip, num_pings))
+        # lines.append('sudo docker exec -it mn.vnf_user ping -c 3 {}'.format("99.0.0.2"))
         # print
         for l in lines:
             print(l)

@@ -3,6 +3,7 @@
 import networkx as nx
 from geopy.distance import vincenty
 import numpy as np
+import yaml
 
 
 # read graphml, calculate delays, return undirected(!) NetworkX graph
@@ -44,5 +45,8 @@ def read_network(file, node_attr=None, edge_attr=None):
             nx.set_edge_attributes(network, value, key)
 
     return network
+def read_service(service_file):
+        with open(service_file) as f:
+            service = yaml.load(f, Loader=yaml.FullLoader)
 if __name__ == '__main__':
     read_network("/home/xiaofu/placement-emulation/inputs/networks/Aarnet.graphml")
